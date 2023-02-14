@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  creationTimestamp: null
+  labels:
+    app: spring-boot-k8s
+  name: spring-boot-k8s
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: spring-boot-k8s
+  strategy: {}
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: spring-boot-k8s
+    spec:
+      containers:
+        - image: sam12302021/spring-boot-k8s:latest
+          name: spring-boot-k8s
+          resources: {}
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+          lifecycle:
+            preStop:
+              exec:
+                command: ["sh", "-c", "sleep 10"]
+          volumeMounts:
+            - name: config-volume
+              mountPath: /workspace/config
+      volumes:
+        - name: config-volume
+          configMap:
+            name: spring-boot-k8s
+status: {}
